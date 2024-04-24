@@ -134,4 +134,6 @@ def execute_command():
     return render_template_string(output_display_html, command=command, output=output)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
