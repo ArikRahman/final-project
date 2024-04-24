@@ -88,7 +88,7 @@ output_display_html = '''
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        a {
+        button, a {
             display: inline-block;
             background-color: #007bff;
             color: white;
@@ -96,8 +96,10 @@ output_display_html = '''
             margin-top: 20px;
             border-radius: 5px;
             text-decoration: none;
+            border: none;
+            cursor: pointer;
         }
-        a:hover {
+        button:hover, a:hover {
             background-color: #0056b3;
         }
     </style>
@@ -105,11 +107,12 @@ output_display_html = '''
 <body>
     <p>Answer:</p>
     <pre>{{ output }}</pre>
+    <button onclick="window.location.href='/'">Ask Another Question</button>
     <a href="/">Back to form</a>
-      
 </body>
 </html>
 '''
+
 
 @app.route('/')
 def index():
