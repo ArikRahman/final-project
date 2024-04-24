@@ -1,8 +1,11 @@
-from flask import Flask, request, render_template_string
+from flask import Flask, request, render_template_string, session
 import subprocess
 import shlex
 
 app = Flask(__name__)
+app.secret_key = 'your_secure_key'
+global total
+commands_by_ip = {}
 
 # HTML template for the input form with added CSS
 input_form_html = '''
@@ -55,9 +58,9 @@ input_form_html = '''
         <!-- Dropdown for selecting the file -->
         <label for="fileChoice">Choose a personality:</label>
         <select name="fileChoice" id="fileChoice">
-            <option value="fire.txt">Blaze</option>
-            <option value="water.txt">Mirana</option>
-            <option value="grass.txt">Verdant</option>
+            <option value="fire.txt">Charmander</option>
+            <option value="water.txt">Squirtle</option>
+            <option value="grass.txt">Bulbosaur</option>
         </select>
         
         <input type="submit" value="Execute">
@@ -117,17 +120,27 @@ def index():
 def execute_command():
     command = request.form['command']
     file_choice = request.form['fileChoice']  # Retrieve the selected file from the form
+    source_ip = request.remote_addr  # Get the source IP address of the client
 
+    # Log the received input and source IP
+    print(f"Command received: {command} from IP: {source_ip}")
+    
     # Basic command validation to only allow "safe" commands for demonstration
     if "rm" in command or "&&" in command or ";" in command:
         return "Unsafe command detected!", 400
 
     try:
+        print(command)
         # Adjust the command string to use the selected file
         command_string = f'sgpt "{command}" < {file_choice}'  # Use the selected file
         
         # Execute the command using the shell
         output = subprocess.check_output(command_string, shell=True, text=True, stderr=subprocess.STDOUT)
+        print(output)
+        if source_ip not in commands_by_ip:
+            commands_by_ip[source_ip] = []
+        commands_by_ip[source_ip].append((command, output))
+        print(commands_by_ip[source_ip])
     except subprocess.CalledProcessError as e:
         output = f"Error executing command: {e.output}"
 
