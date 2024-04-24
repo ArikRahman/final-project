@@ -133,9 +133,17 @@ def execute_command():
         return "Unsafe command detected!", 400
 
     try:
-        print(command)
+        print("Checking contents of commands_by_ip:", commands_by_ip)
+        if source_ip not in commands_by_ip:
+            commands_by_ip[source_ip] = []
+
+        print("Current command:", command)
+        print("Commands by IP:", commands_by_ip[source_ip])
+
+        total = command + str(commands_by_ip[source_ip])
+        print("Total after concatenation:", total)
         # Adjust the command string to use the selected file
-        command_string = f'sgpt "{command}" < {file_choice}'  # Use the selected file
+        command_string = f'sgpt "{total}" < {file_choice}'  # Use the selected file
         
         # Execute the command using the shell
         output = subprocess.check_output(command_string, shell=True, text=True, stderr=subprocess.STDOUT)
